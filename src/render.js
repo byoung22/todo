@@ -35,7 +35,6 @@ const taskUI = {
                 i++;
             });
         });
-        console.log(this.alltasks);
     },
     taskRender: function() {
         this.populateAllTasks();
@@ -117,7 +116,7 @@ const formUI = {
         this.projectForm.addEventListener('submit', function(event) {
             event.preventDefault();
             list.addProject(formUI.projectTitle.value);
-            updateProject();
+            navUI.navRender();
             formUI.projectForm.classList.add('hidden');
             formUI.overlay.classList.add('hidden');
         });
