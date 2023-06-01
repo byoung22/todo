@@ -23,8 +23,14 @@
             <button id="add-project">+</button>
         </nav>
         <div class="content">
-            <div id="title"></div>
-            <div id="tasks"></div>
+            <div id="content-header">
+                <div class="content-title">To Do</div>
+                <div id="date-string"></div>
+            </div>
+            <div id="task-container">
+                <div id="tasks"></div>
+                <button id="add-task">+</button>
+            </div>
         </div>
     </main>
     <footer>
@@ -40,13 +46,15 @@
 
     <form id="task-form" class="hidden">
         <div class="form-row title">New Task</div>
+        <div class="form-row">
+            <label for="category">Project:</label>
+            <select name="category" id="category">
+                <option value="noCategory">Choose a Project</option>
+            </select>
+        </div>
         <input class="form-row" type="text" id="title" name="title" required placeholder="Task">
         <textarea class="form-row" id="description" name="description" maxlength="200" placeholder="Description..." style="resize: none;"></textarea>
         <input class="form-row" type="date" id="date" name="date">
-        <div class="form-row">
-            <label for="read">Have you read it?</label>
-            <input type="checkbox" id="read" name="read"></input>
-        </div>
         <button class="form-row" type="submit" id="submit">Add</button>
     </form>
     <div id="overlay" class="hidden"></div>
