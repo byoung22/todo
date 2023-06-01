@@ -49,7 +49,7 @@ table {
 
 * {
     box-sizing: border-box;
-    outline: 1px red dashed;
+    /*outline: 1px red dashed;*/
     --main-bg-color: rgb(87, 111, 114);
     --side-bg-color: rgb(125, 157, 156);
     --content-bg-color: rgb(228, 220, 207);

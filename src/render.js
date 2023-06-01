@@ -8,6 +8,13 @@ import getYear from 'date-fns/getYear';
 const list = new List();
 list.addProject('None'); // For tasks with no category
 
+// Initial data
+list.addProject('🏫 School');
+list.addProject('💼 Work');
+list.projects['🏫 School'].addTask('Homework', 'math hw', '5-5-12');
+list.projects['🏫 School'].addTask('Science Homework', 'math hw', '6-1-23');
+list.projects['💼 Work'].addTask('Email Jenny', 'Ask about reports', '6-1-23');
+
 let currentPage = 'ToDo';
 // WORK ON LOADING TASKS SAVE ALL TASKS TO ALLTASK
 // SORT THE TASKS BY DATE
@@ -20,7 +27,18 @@ const taskUI = {
     taskDOM: function() {
         this.tasksList = document.querySelector('#tasks');
     },
+    populateAllTasks: function() {
+        let i = 0;
+        Object.keys(list.projects).forEach(project => {
+            Object.keys(list.projects[project]['storage']).forEach(task => {
+                this.alltasks[i] = list.projects[project]['storage'][task];
+                i++;
+            });
+        });
+        console.log(this.alltasks);
+    },
     taskRender: function() {
+        this.populateAllTasks();
         this.taskDOM();
     }
 }
@@ -127,10 +145,7 @@ const formUI = {
     },
 }
 
-// Initial data
-list.addProject('🏫 School');
-list.addProject('💼 Work');
-list.projects['🏫 School'].addTask('Homework', 'math hw', '5-5-12');
+
 
 export default function renderUI() {
     dateUI.dateRender();
