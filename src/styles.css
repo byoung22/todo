@@ -91,17 +91,21 @@ main {
         background-color: var(--content-bg-color);
         color: black;
         #content-header {
-            .content-title {
-                font-size: 35px;
-            }
+            font-size: 35px;
             display: flex;
             align-items: end;
             gap: 15px;
+
+            #date-string {
+                font-size: 18px;
+            }
         }
-        #task-container {
+        #task-container,
+        #inbox-container {
             display: flex;
             flex-direction: column;
-            #tasks {
+            #tasks,
+            #inboxs {
                 .card {
                     display: grid;
                     grid-template: 3fr 2fr / 1fr 8fr 1fr;

@@ -1,6 +1,7 @@
 import List from "./projects";
 import format from 'date-fns/format';
 import differenceInDays from 'date-fns/differenceInDays';
+import differenceInHours from 'date-fns/differenceInHours'
 import formatDistanceStrict from 'date-fns/formatDistanceStrict';
 import compareDesc from 'date-fns/compareDesc';
 
@@ -13,46 +14,72 @@ const today = new Date();
 // Initial data
 list.addProject('🏫 School');
 list.addProject('💼 Work');
-list.addTask('Homework', 'math hw', new Date('2012-05-12'), '🏫 School');
-list.addTask('Science Homework', 'math hw', new Date('2023-01-23'), '🏫 School');
-list.addTask('Email Jenny', 'Ask about reports', new Date('2021-01-23'), '💼 Work');
+list.addTask('Homework', 'math hw', new Date('2012-05-12'), '🏫 School', false);
+list.addTask('Science Homework', 'math hw', new Date(), '🏫 School', true);
+list.addTask('Email Jenny', 'Ask about reports', new Date('2021-01-23'), '💼 Work', false);
 
-let currentPage = 'ToDo';
-// WORK ON LOADING TASKS SAVE ALL TASKS TO ALLTASK
-// SORT THE TASKS BY DATE
+let currentPage = 'inbox';
 
 const taskUI = {
     alltasks: [],
+    inbox: [],
 
     taskDOM: function() {
         this.dateDisplay = document.querySelector('#date-string');
         this.tasksList = document.querySelector('#tasks');
+        this.inboxList = document.querySelector('#inboxs');
     },
     displayDate: function() {
         this.dateDisplay.textContent = format((new Date()), 'iiii MMMM d, y');
     },
-    updateAllTasks: function() {
+    displayTasks: function(page) {
         this.alltasks = [];
-        Object.values(list.storage).forEach(task => {
-            this.alltasks.push(task);
-        });
-        this.alltasks.sort((a, b) => compareDesc(a.date, b.date));
-    },
-    todoDisplay: function() {
+        this.inbox = [];
         this.tasksList.textContent = '';
-        this.alltasks.forEach(object => {
-            this.createCard(object)
-        });
-    },
-    projectDisplay: function(project) {
-        this.tasksList.textContent = '';
+        this.inboxList.textContent = '';
         
+        // Update tasks to display and display the tasks
+        if (page === 'todo') {
+            Object.values(list.storage).forEach(task => {
+                if (task['todo'])this.alltasks.push(task);
+            });
+            this.alltasks.sort((a, b) => compareDesc(a.date, b.date));
+        }
+
+        if (page === 'inbox') {
+            Object.values(list.storage).forEach(task => {
+                if (task['todo']) {
+                    this.alltasks.push(task);
+                } else {
+                    // The rest of tasks that are not planned to do
+                    this.inbox.push(task);
+                }
+            });
+            this.alltasks.sort((a, b) => compareDesc(a.date, b.date));
+
+            this.inbox.forEach(object => {
+                this.createCard(object, this.inboxList);
+            });
+        }
+
+        list.projects.forEach(project => {
+            if (page === project) {
+                Object.values(list.storage).forEach(task => {
+                    if (task['project'] === project)this.alltasks.push(task);
+                });
+                this.alltasks.sort((a, b) => compareDesc(a.date, b.date));
+            }
+        });
+
+        this.alltasks.forEach(object => {
+            this.createCard(object, this.tasksList);
+        });
 
     },
-    createCard: function(object) {
+    createCard: function(object, parent) {
         const card = document.createElement('div');
         card.classList.add('card');
-        this.tasksList.appendChild(card);
+        parent.appendChild(card);
 
         const check = document.createElement('input'); 
         check.setAttribute('type', 'checkbox');
@@ -75,17 +102,21 @@ const taskUI = {
             info.appendChild(project);
         } 
         // If date is within a week, display in words
-        const date = document.createElement('p');
-        const result = differenceInDays(today, object['date']);
-        if (result === 0) {
-            date.textContent = '📅 Due Today'
-        } else if (result < 7) {
-            date.textContent = '📅' + formatDistanceStrict(today, object['date'], {unit: 'day', roundingMethod: 'floor'});
-        } else {
-            date.textContent = '📅' + format(object['date'], 'MMM d y')
+        if (object['date']) {
+            const date = document.createElement('p');
+            const result = Math.floor(differenceInHours(today, object['date'])/24)|0;
+            if (result === 0) {
+                date.textContent = '📅 Due Today';
+            } else if (result === -1) {
+                date.textContent = '📅 Due Tomorrow';
+            } else if (result < 7) {
+                date.textContent = '📅' + formatDistanceStrict(today, object['date'], {unit: 'day', roundingMethod: 'floor'});
+            } else {
+                date.textContent = '📅' + format(object['date'], 'MMM d y')
+            }
+            date.classList.add('date');
+            info.appendChild(date);
         }
-        date.classList.add('date');
-        info.appendChild(date);
 
         const star = document.createElement('input'); 
         star.setAttribute('type', 'checkbox');
@@ -94,9 +125,8 @@ const taskUI = {
     },
     taskRender: function() {
         this.taskDOM();
-        this.updateAllTasks();
         this.displayDate();
-        this.todoDisplay();
+        this.displayTasks(currentPage);
     }
 }
 
@@ -120,6 +150,7 @@ const navUI = {
 }
 
 const formUI = {
+    formButtonClass: '',
     formDOM: function() {
         this.projectForm = document.querySelector('#project-form');
         this.projectFormButton = document.querySelector('#add-project');
@@ -127,7 +158,7 @@ const formUI = {
         this.overlay = document.querySelector('#overlay');
 
         this.taskForm = document.querySelector('#task-form');
-        this.taskFormButton = document.querySelector('#add-task');
+        this.taskFormButton = document.querySelectorAll('#add-task');
         this.taskSelection = document.querySelector('#category');
         this.taskTitle = document.querySelector('#title');
         this.taskDescription = document.querySelector('#description');
@@ -142,9 +173,6 @@ const formUI = {
         });
 
         this.taskSelection.innerHTML = options;
-    },
-    submitTask: function() {
-
     },
     resetVal: function() {
         this.projectTitle.value = '';
@@ -174,11 +202,30 @@ const formUI = {
     
         this.taskForm.addEventListener('submit', function(event) {
             event.preventDefault();
+
+            // Check if it belongs in the todo list
+            let todo = false;
+            if (formUI.taskDescription.value) {
+                let taskDate = format(new Date(formUI.taskDate.value.split('-')), 'MMM d y');
+                let todayDate = format(today, 'MMM d y');
+                if (taskDate === todayDate) todo = true;   
+            }
+            if (formUI.formButtonClass === 'todo') todo = true;
+
+            // Check if it has a date
+            let date;
+
+            if (formUI.taskDate.value === '') {
+                date = false;
+            } else {
+                date = new Date(formUI.taskDate.value.split('-'))
+            }
             list.addTask(
                 formUI.taskTitle.value,
                 formUI.taskDescription.value,
-                new Date(formUI.taskDate.value.split('-')),
-                formUI.taskSelection.value
+                date,
+                formUI.taskSelection.value,
+                todo,
             )
 
             formUI.taskForm.classList.add('hidden');
@@ -192,10 +239,13 @@ const formUI = {
             formUI.overlay.classList.remove('hidden');
         });
     
-        this.taskFormButton.addEventListener('click', () => {
-            formUI.taskForm.classList.remove('hidden');
-            formUI.overlay.classList.remove('hidden');
-        });
+        this.taskFormButton.forEach(button => {
+            button.addEventListener('click', () => {
+                this.formButtonClass = button.className;
+                formUI.taskForm.classList.remove('hidden');
+                formUI.overlay.classList.remove('hidden');
+            });
+        })
     },
     formRender: function() {
         this.formDOM();
