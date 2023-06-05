@@ -14,8 +14,8 @@
     </header>
     <main>
         <nav class="side-bar">
-            <button>To Do</button>
-            <button>Inbox</button>
+            <button id="nav-button">To Do</button>
+            <button id="nav-button">Inbox</button>
             <div>Projects</div>
             <div id="projects">
                 
@@ -24,17 +24,19 @@
         </nav>
         <div class="content">
             <div id="content-header">
-                <div class="content-title">To Do</div>
+                <div id="task-title" class="content-title">To Do</div>
                 <div id="date-string"></div>
             </div>
             <div id="task-container">
                 <div id="tasks"></div>
                 <button id="add-task" class="todo">+</button>
             </div>
-            <div id="content-header">Inbox</div>
-            <div id="inbox-container" class='hidden-inbox'>
-                <div id="inboxs"></div>
-                <button id="add-task" class="inbox">+</button>
+            <div id="inbox" class="hidden">
+                <div id="content-header">Inbox</div>
+                <div id="inbox-container">
+                    <div id="inboxs"></div>
+                    <button id="add-task" class="inbox">+</button>
+                </div>
             </div>
         </div>
     </main>

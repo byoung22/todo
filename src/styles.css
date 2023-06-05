@@ -2,7 +2,6 @@
    v2.0 | 20110126
    License: none (public domain)
 */
-
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
@@ -49,7 +48,7 @@ table {
 
 * {
     box-sizing: border-box;
-    outline: 1px red dashed;
+    /*outline: 1px red dashed;*/
     --main-bg-color: rgb(87, 111, 114);
     --side-bg-color: rgb(125, 157, 156);
     --content-bg-color: rgb(228, 220, 207);
@@ -108,7 +107,8 @@ main {
             #inboxs {
                 .card {
                     display: grid;
-                    grid-template: 3fr 2fr / 1fr 8fr 1fr;
+                    grid-template: 3fr 2fr / 50px 8fr 50px;
+                    background-color: var(--secondary-bg-color);
                     
                     .check{
                         grid-row: 1 / span 2;
@@ -130,6 +130,12 @@ main {
                     .star{
                         grid-row: 1 / span 2;
                         grid-column: 3;
+                    }
+                    .trash {
+                        grid-row: 1 / span 2;
+                        grid-column: 3;
+                        background: no-repeat center url(./pics/trash.svg);
+                        background-size: 30px;
                     }
                 }
             }
@@ -202,4 +208,59 @@ form {
         font-weight: bold;
         font-size: 20px;
     }
+}
+
+/* Checkbox stylizing */
+.check {
+    position: relative;
+    appearance: none;
+    background-color: var(--secondary-bg-color);
+    font: inherit;
+    color: currentColor;
+    width: 25px;
+    height: 25px;
+    border: 0.15em solid currentColor;
+    border-radius: 0.15em;
+    margin: auto;
+}
+.check::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    background-color: black;
+    width: 15px;
+    height: 15px;
+    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+    transition: 120ms transform ease-in-out;
+}
+.check:checked::before {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.star {
+    position: relative;
+    appearance: none;
+    background: no-repeat url('./pics/star.svg');
+    background-size: 35px 35px;
+    width: 35px;
+    height: 35px;
+    margin: auto;
+}
+.star::before {
+    content: "";
+    position: absolute;
+    top: calc(50% + 7px);
+    left: calc(50% + 5px);
+    transform: translate(-60%, -60%) scale(0);
+    background-color: black;
+    width: 35px;
+    height: 35px;
+    background: no-repeat url('./pics/star-fill.svg');
+    background-size: 24px 24px;
+    transition: 120ms transform ease-in-out;
+}
+.star:checked::before {
+    transform: translate(-50%, -50%) scale(1);
 }

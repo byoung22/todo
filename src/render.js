@@ -1,7 +1,6 @@
 import List from "./projects";
 import format from 'date-fns/format';
-import differenceInDays from 'date-fns/differenceInDays';
-import differenceInHours from 'date-fns/differenceInHours'
+import differenceInHours from 'date-fns/differenceInHours';
 import formatDistanceStrict from 'date-fns/formatDistanceStrict';
 import compareDesc from 'date-fns/compareDesc';
 
@@ -18,7 +17,7 @@ list.addTask('Homework', 'math hw', new Date('2012-05-12'), '🏫 School', false
 list.addTask('Science Homework', 'math hw', new Date(), '🏫 School', true);
 list.addTask('Email Jenny', 'Ask about reports', new Date('2021-01-23'), '💼 Work', false);
 
-let currentPage = 'inbox';
+let currentPage = 'To Do';
 
 const taskUI = {
     alltasks: [],
@@ -28,74 +27,89 @@ const taskUI = {
         this.dateDisplay = document.querySelector('#date-string');
         this.tasksList = document.querySelector('#tasks');
         this.inboxList = document.querySelector('#inboxs');
+        this.inboxTitle = document.querySelector('#inbox');
+        this.taskTitle = document.querySelector('#task-title');
     },
     displayDate: function() {
         this.dateDisplay.textContent = format((new Date()), 'iiii MMMM d, y');
     },
+    displayTitle: function(page) {
+        if (page === 'Inbox') {
+            this.inboxTitle.classList.remove('hidden');
+            this.taskTitle.textContent = 'To Do';
+        } else {
+            this.inboxTitle.classList.add('hidden');
+            this.taskTitle.textContent = page;
+        }
+    },
     displayTasks: function(page) {
         this.alltasks = [];
         this.inbox = [];
+        
         this.tasksList.textContent = '';
         this.inboxList.textContent = '';
         
-        // Update tasks to display and display the tasks
-        if (page === 'todo') {
+        // If page is on To Do or Inbox
+        if (page === 'To Do' || page === 'Inbox') {
             Object.values(list.storage).forEach(task => {
                 if (task['todo'])this.alltasks.push(task);
-            });
-            this.alltasks.sort((a, b) => compareDesc(a.date, b.date));
-        }
-
-        if (page === 'inbox') {
-            Object.values(list.storage).forEach(task => {
-                if (task['todo']) {
-                    this.alltasks.push(task);
-                } else {
-                    // The rest of tasks that are not planned to do
-                    this.inbox.push(task);
+                if (page === 'Inbox') {
+                    if (!task['todo'])this.inbox.push(task);
                 }
             });
-            this.alltasks.sort((a, b) => compareDesc(a.date, b.date));
-
-            this.inbox.forEach(object => {
-                this.createCard(object, this.inboxList);
+        } else {
+            // Else page is on a project
+            Object.values(list.storage).forEach(task => {
+                if (task['project'] === page)this.alltasks.push(task);
             });
         }
 
-        list.projects.forEach(project => {
-            if (page === project) {
-                Object.values(list.storage).forEach(task => {
-                    if (task['project'] === project)this.alltasks.push(task);
-                });
-                this.alltasks.sort((a, b) => compareDesc(a.date, b.date));
-            }
-        });
+        // Sort tasks by date
+        this.alltasks.sort((a, b) => compareDesc(a.date, b.date));
+        this.inbox.sort((a, b) => compareDesc(a.date, b.date));
 
+        // Populate the UI with the alltasks and inbox values
+        this.inbox.forEach(object => {
+            this.createCard(object, this.inboxList);
+        });
         this.alltasks.forEach(object => {
             this.createCard(object, this.tasksList);
         });
-
     },
     createCard: function(object, parent) {
         const card = document.createElement('div');
+        const check = document.createElement('input'); 
+        const title = document.createElement('p');
+        const info = document.createElement('div');
+        const project = document.createElement('p');
+        const star = document.createElement('input');
+        const trash = document.createElement('button');
+
         card.classList.add('card');
         parent.appendChild(card);
 
-        const check = document.createElement('input'); 
+        
         check.setAttribute('type', 'checkbox');
         check.classList.add('check');
+        check.addEventListener('click', ()=> {
+            object['check'] = check.checked;
+            if (check.checked) {
+                star.classList.add('hidden');
+                trash.classList.remove('hidden');
+            } else {
+                star.classList.remove('hidden');
+                trash.classList.add('hidden');
+            }
+        });
         card.appendChild(check);
 
-        const title = document.createElement('p');
         title.textContent = object['title'];
         title.classList.add('title');
         card.appendChild(title);
 
-        const info = document.createElement('div');
         info.classList.add('info');
         card.appendChild(info);
 
-        const project = document.createElement('p');
         if (object['project'] !== 'None') {
             project.textContent = object['project'];
             project.classList.add('project');
@@ -104,48 +118,85 @@ const taskUI = {
         // If date is within a week, display in words
         if (object['date']) {
             const date = document.createElement('p');
-            const result = Math.floor(differenceInHours(today, object['date'])/24)|0;
-            if (result === 0) {
+            const difference = Math.floor(differenceInHours(today, object['date'])/24)|0;
+            if (difference === 0) {
                 date.textContent = '📅 Due Today';
-            } else if (result === -1) {
+            } else if (difference > 0) {
+                date.textContent = '📅' + format(object['date'], 'MMM d y');
+                date.classList.add('late');
+            } else if (difference === -1) {
                 date.textContent = '📅 Due Tomorrow';
-            } else if (result < 7) {
-                date.textContent = '📅' + formatDistanceStrict(today, object['date'], {unit: 'day', roundingMethod: 'floor'});
+            } else if (difference > -7) {
+                date.textContent = '📅 Due in ' + -difference + ' days';
             } else {
-                date.textContent = '📅' + format(object['date'], 'MMM d y')
+                date.textContent = '📅' + format(object['date'], 'MMM d y');
             }
             date.classList.add('date');
             info.appendChild(date);
         }
-
-        const star = document.createElement('input'); 
+        
         star.setAttribute('type', 'checkbox');
         star.classList.add('star');
+        star.addEventListener('click', ()=> {
+            object['important'] = star.checked;
+        });
         card.appendChild(star);
+
+        trash.classList.add('trash');
+        trash.classList.add('hidden');
+        trash.addEventListener('click', () => {
+            list.delTask(object.title);
+            this.taskRender();
+        });
+        card.appendChild(trash);
+        
+        // If checked hide star and show trash
+        if (object['checked']) {
+            star.classList.add('hidden');
+            trash.classList.remove('hidden');
+        }
+    },
+    cardEvents: function() {
+
     },
     taskRender: function() {
         this.taskDOM();
         this.displayDate();
         this.displayTasks(currentPage);
+        this.displayTitle(currentPage);
+        this.taskDOM();
     }
 }
 
 const navUI = {
     navDOM: function() {
         this.navProj = document.querySelector('#projects');
+        this.inbox = document.querySelector('inbox');
+        this.buttons = document.querySelectorAll('#nav-button');
     },
     navProject: function() {
         this.navProj.textContent = '';
         list.projects.forEach(project => {
             if (project === 'None') return;
-            let button = document.createElement('button');
+            const button = document.createElement('button');
+            button.setAttribute('id', 'nav-button');
             button.textContent = project;
             this.navProj.appendChild(button);
+        });
+        this.navDOM();
+    },
+    navButtonLogic: function() {
+        this.buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                currentPage = button.textContent;
+                taskUI.taskRender();
+            })
         });
     },
     navRender: function() {
         this.navDOM();
         this.navProject();
+        this.navButtonLogic();
     },
 }
 
@@ -253,8 +304,6 @@ const formUI = {
         this.projectSelection();
     },
 }
-
-
 
 export default function renderUI() {
     formUI.formRender();
