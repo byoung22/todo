@@ -1,7 +1,7 @@
 import List from "./projects";
 import format from 'date-fns/format';
 import differenceInHours from 'date-fns/differenceInHours';
-import formatDistanceStrict from 'date-fns/formatDistanceStrict';
+import addDays from 'date-fns/addDays'
 import compareDesc from 'date-fns/compareDesc';
 
 
@@ -86,9 +86,15 @@ const taskUI = {
         const trash = document.createElement('button');
 
         card.classList.add('card');
+        card.addEventListener('click', (event) => {
+            if (event.target.className !== 'check' && event.target.className !== 'star') {
+                formUI.projectSelection();
+                formUI.cardButton(object);
+                formUI.presetVal(object);
+            }
+        });
         parent.appendChild(card);
 
-        
         check.setAttribute('type', 'checkbox');
         check.classList.add('check');
         check.addEventListener('click', ()=> {
@@ -122,14 +128,14 @@ const taskUI = {
             if (difference === 0) {
                 date.textContent = '📅 Due Today';
             } else if (difference > 0) {
-                date.textContent = '📅' + format(object['date'], 'MMM d y');
+                date.textContent = '📅' + format(object['date'], ' MMM d y');
                 date.classList.add('late');
             } else if (difference === -1) {
                 date.textContent = '📅 Due Tomorrow';
             } else if (difference > -7) {
                 date.textContent = '📅 Due in ' + -difference + ' days';
             } else {
-                date.textContent = '📅' + format(object['date'], 'MMM d y');
+                date.textContent = '📅 ' + format(object['date'], ' MMM d y');
             }
             date.classList.add('date');
             info.appendChild(date);
@@ -156,15 +162,11 @@ const taskUI = {
             trash.classList.remove('hidden');
         }
     },
-    cardEvents: function() {
-
-    },
     taskRender: function() {
         this.taskDOM();
         this.displayDate();
         this.displayTasks(currentPage);
         this.displayTitle(currentPage);
-        this.taskDOM();
     }
 }
 
@@ -214,9 +216,16 @@ const formUI = {
         this.taskTitle = document.querySelector('#title');
         this.taskDescription = document.querySelector('#description');
         this.taskDate = document.querySelector('#date');
+
+        this.editForm = document.querySelector('#edit-form');
+        this.editTaskTitle = document.querySelector('#edit-title');
+        this.editTaskSelection = document.querySelector('#edit-category');
+        this.editTaskDescription = document.querySelector('#edit-description');
+        this.editTaskDate = document.querySelector('#edit-date');
     },
     projectSelection: function() {
         this.taskSelection.innerHTML = '';
+        this.editTaskSelection.innerHTML = '';
         let options = '<option value="None">Choose a Project</option>';
         list.projects.forEach(project => {
             if (project === 'None') return;
@@ -224,6 +233,7 @@ const formUI = {
         });
 
         this.taskSelection.innerHTML = options;
+        this.editTaskSelection.innerHTML = options;
     },
     resetVal: function() {
         this.projectTitle.value = '';
@@ -232,10 +242,32 @@ const formUI = {
         this.taskDescription.value = '';
         this.taskDate.value = '';
     },
+    presetVal: function(object) {
+        this.editTaskTitle.value = object.title;
+        this.editTaskSelection.value = object.project;
+        this.editTaskDescription.value = object.description;
+        this.editTaskDate.value = format(object.date, 'yyyy-MM-dd');
+    },
+    cardButton: function(object) {
+        this.editForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            object.title = formUI.editTaskTitle.value;
+            object.project = formUI.editTaskSelection.value;
+            object.description = formUI.editTaskDescription.value;
+            object.date = addDays(new Date(formUI.editTaskDate.value), 1);
+
+            taskUI.taskRender();
+            formUI.editForm.classList.add('hidden');
+            formUI.overlay.classList.add('hidden');
+        });
+        this.editForm.classList.remove('hidden');
+        this.overlay.classList.remove('hidden');
+    },
     formButton: function() {
         this.overlay.addEventListener('click', function() {
             formUI.taskForm.classList.add('hidden');
             formUI.projectForm.classList.add('hidden');
+            formUI.editForm.classList.add('hidden');
             formUI.overlay.classList.add('hidden');
             formUI.resetVal();
         });
@@ -293,6 +325,11 @@ const formUI = {
         this.taskFormButton.forEach(button => {
             button.addEventListener('click', () => {
                 this.formButtonClass = button.className;
+                list.projects.forEach(project => {
+                    if (currentPage === project) {
+                        formUI.taskSelection.value = project;
+                    }
+                });
                 formUI.taskForm.classList.remove('hidden');
                 formUI.overlay.classList.remove('hidden');
             });

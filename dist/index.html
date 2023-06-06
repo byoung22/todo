@@ -64,6 +64,22 @@
         <input class="form-row" type="date" id="date" name="date">
         <button class="form-row" type="submit" id="submit">Add</button>
     </form>
+
+    <form id="edit-form" class="hidden">
+        <input class="form-row" type="text" id="edit-title" name="edit-title" required>
+        <div class="form-row">
+            <label for="edit-category">Project:</label>
+            <select name="edit-category" id="edit-category">
+                <option value="noCategory">Choose a Project</option>
+            </select>
+        </div>
+        <textarea class="form-row" id="edit-description" name="edit-description" maxlength="200" style="resize: none;"></textarea>
+        <input class="form-row" type="date" id="edit-date" name="edit-date">
+        <div class="button-holder form-row">
+            <button class="form-row" type="submit" id="submit">Delete</button>
+            <button class="form-row" type="submit" id="submit">Edit ✎</button>
+        </div>
+    </form>
     <div id="overlay" class="hidden"></div>
 </body>
 </html>
