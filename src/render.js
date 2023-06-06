@@ -186,7 +186,10 @@ const navUI = {
             if (project === 'None') return;
             const button = document.createElement('button');
             button.setAttribute('id', 'nav-button');
-            button.textContent = project;
+            const text = document.createElement('span');
+            text.textContent = project;
+            
+            button.appendChild(text);
             this.navProj.appendChild(button);
         });
         this.navDOM();
@@ -194,7 +197,12 @@ const navUI = {
     navButtonLogic: function() {
         this.buttons.forEach(button => {
             button.addEventListener('click', () => {
+                this.buttons.forEach(selection => {
+                    selection.classList.remove('selected')
+                });
+
                 currentPage = button.textContent;
+                button.classList.add('selected');
                 taskUI.taskRender();
             })
         });

@@ -14,9 +14,9 @@
     </header>
     <main>
         <nav class="side-bar">
-            <button id="nav-button">To Do</button>
-            <button id="nav-button">Inbox</button>
-            <div>Projects</div>
+            <button id="nav-button" class="selected"><span>To Do</span></button>
+            <button id="nav-button"><span>Inbox</span></button>
+            <div id="project-title">Projects</div>
             <div id="projects">
                 
             </div>
@@ -46,7 +46,7 @@
     </footer>
 
     <form id="project-form" class="hidden">
-        <div class="form-row">New Project</div>
+        <div class="form-row title">New Project</div>
         <input class="form-row" type="text" id="project-title" name="project-title" required placeholder="Project Name">
         <button class="form-row" type="submit" id="submit">Add</button>
     </form>

@@ -53,6 +53,9 @@ table {
     --side-bg-color: rgb(125, 157, 156);
     --content-bg-color: rgb(237, 231, 221);
     --secondary-bg-color: rgb(247, 244, 239);
+    --project-bg-color: rgb(169, 200, 199);
+    --selected-bg-color: rgb(200, 239, 238);
+    --hover-bg-color: rgb(255, 253, 249);
 }
 body {
     display: flex;
@@ -73,17 +76,90 @@ header {
         height: 88px;
     }
 }
+
 main {
     flex: 1;
     display: grid;
     grid-template: 1fr / 250px 1fr;
-    > nav {
+    .side-bar {
         display: flex;
         flex-direction: column;
         background-color: var(--side-bg-color);
+        #nav-button {
+            appearance: none;
+            background-color: var(--project-bg-color);
+            border-width: 0;
+            box-sizing: border-box;
+            color: black;
+            cursor: pointer;
+            display: inline-block;
+            font-family: Clarkson,Helvetica,sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0;
+            line-height: 1em;
+            margin: 0;
+            opacity: 1;
+            outline: 0;
+            padding: 1.5em 2.2em;
+            position: relative;
+            text-align: center;
+            text-decoration: none;
+            text-rendering: geometricprecision;
+            text-transform: uppercase;
+            transition: opacity 300ms cubic-bezier(.694, 0, 0.335, 1),background-color 100ms cubic-bezier(.694, 0, 0.335, 1),color 100ms cubic-bezier(.694, 0, 0.335, 1);
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+            vertical-align: baseline;
+            white-space: nowrap;
+        }
+        #nav-button:before {
+            animation: opacityFallbackOut .5s step-end forwards;
+            backface-visibility: hidden;
+            background-color: var(--selected-bg-color);
+            clip-path: polygon(-1% 0, 0 0, -25% 100%, -1% 100%);
+            content: "";
+            height: 100%;
+            left: 0;
+            position: absolute;
+            top: 0;
+            transform: translateZ(0);
+            transition: clip-path .5s cubic-bezier(.165, 0.84, 0.44, 1), -webkit-clip-path .5s cubic-bezier(.165, 0.84, 0.44, 1);
+            width: 100%;
+        }
+
+        #nav-button:hover:before {
+            animation: opacityFallbackIn 0s step-start forwards;
+            clip-path: polygon(0 0, 101% 0, 101% 101%, 0 101%);
+        }
+
+        #nav-button.selected {
+            background-color: var(--selected-bg-color);
+        }
+
+        #nav-button span {
+            z-index: 1;
+            position: relative;
+        }
+        #project-title {
+            font-size: 35px;
+            padding: 10px;
+            color: var(--secondary-bg-color);
+        }
         #projects {
             display: flex;
             flex-direction: column;
+        }
+        #add-project {
+            border: 0;
+            padding: 10px;
+            font-size: larger;
+            font-weight: 900;
+            background-color: var(--project-bg-color);
+        }
+        #add-project:hover {
+            background-color: var(--selected-bg-color);
         }
     }
     .content {
@@ -109,6 +185,9 @@ main {
             }
             #tasks,
             #inboxs {
+                .card:hover {
+                    background-color: var(--hover-bg-color);
+                }
                 .card {
                     padding: 10px;
                     display: grid;
@@ -144,6 +223,16 @@ main {
                         background-size: 30px;
                     }
                 }
+            }
+            #add-task {
+                border: 0;
+                padding: 5px;
+                font-size: large;
+                font-weight: 900;
+                background-color: var(--secondary-bg-color);
+            }
+            #add-task:hover {
+                background-color: var(--hover-bg-color);
             }
         }
     }
@@ -186,7 +275,7 @@ form {
     background-color: #fff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     z-index: 2;
-    background-color: var(--secondary-bg-color);
+    background-color: var(--content-bg-color);
 
     display: flex;
     flex-direction: column;
@@ -212,7 +301,7 @@ form {
     }
     >button {
         border: none;
-        background-color: var(--grey);
+        background-color: var(--content-bg-color);
         border-radius: 8px;
         font-weight: bold;
         font-size: 20px;
@@ -220,14 +309,27 @@ form {
     .button-holder {
         display: flex;
         justify-content: space-evenly;
+        #delete{
+            background-color: rgb(255, 156, 156);
+        }
+        #delete:hover{
+            background-color: rgb(255, 57, 57);
+        }
         >button {
             border: none;
             background-color: var(--grey);
+            padding: 10px;
             border-radius: 8px;
             font-weight: bold;
             font-size: 20px;
             width: 190px;
         }
+    }
+    #submit {
+        background-color: white;
+    }
+    #submit:active {
+        background-color: rgb(212, 204, 190);
     }
 }
 
