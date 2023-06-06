@@ -51,8 +51,8 @@ table {
     /*outline: 1px red dashed;*/
     --main-bg-color: rgb(87, 111, 114);
     --side-bg-color: rgb(125, 157, 156);
-    --content-bg-color: rgb(228, 220, 207);
-    --secondary-bg-color: rgb(240, 235, 227);
+    --content-bg-color: rgb(237, 231, 221);
+    --secondary-bg-color: rgb(247, 244, 239);
 }
 body {
     display: flex;
@@ -93,6 +93,7 @@ main {
             font-size: 35px;
             display: flex;
             align-items: end;
+            padding: 5px;
             gap: 15px;
 
             #date-string {
@@ -103,9 +104,13 @@ main {
         #inbox-container {
             display: flex;
             flex-direction: column;
+            .late {
+                color: rgb(255, 113, 113);
+            }
             #tasks,
             #inboxs {
                 .card {
+                    padding: 10px;
                     display: grid;
                     grid-template: 3fr 2fr / 50px 8fr 50px;
                     background-color: var(--secondary-bg-color);
@@ -117,6 +122,7 @@ main {
                     .title{
                         grid-row: 1;
                         grid-column: 2 / 3;
+                        font-size: 20px;
                     }
                     .info{
                         grid-row: 2 / 3;
@@ -180,6 +186,7 @@ form {
     background-color: #fff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     z-index: 2;
+    background-color: var(--secondary-bg-color);
 
     display: flex;
     flex-direction: column;

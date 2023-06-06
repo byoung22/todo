@@ -2,7 +2,7 @@ import List from "./projects";
 import format from 'date-fns/format';
 import differenceInHours from 'date-fns/differenceInHours';
 import addDays from 'date-fns/addDays'
-import compareDesc from 'date-fns/compareDesc';
+import compareAsc from 'date-fns/compareAsc';
 
 
 
@@ -13,9 +13,12 @@ const today = new Date();
 // Initial data
 list.addProject('🏫 School');
 list.addProject('💼 Work');
-list.addTask('Homework', 'math hw', new Date('2012-05-12'), '🏫 School', false);
-list.addTask('Science Homework', 'math hw', new Date(), '🏫 School', true);
-list.addTask('Email Jenny', 'Ask about reports', new Date('2021-01-23'), '💼 Work', false);
+list.addTask('Homework', 'Math HW section 2-4', addDays(new Date(), -1), '🏫 School', false);
+list.addTask('Science Homework', 'Biology HW posted on canvas', new Date(), '🏫 School', true);
+list.addTask('Email Jenny', 'Ask about reports', addDays(new Date(), 1), '💼 Work', false);
+list.addTask('Excel report', 'Add up expenses', addDays(new Date(), 4), '💼 Work', false);
+list.addTask('Senior Design Project', 'Design freeze report', new Date(), '🏫 School', true);
+list.addTask('Lab Report', 'Heat transfer lab 4', addDays(new Date(), 30), '🏫 School', true);
 
 let currentPage = 'To Do';
 
@@ -65,8 +68,8 @@ const taskUI = {
         }
 
         // Sort tasks by date
-        this.alltasks.sort((a, b) => compareDesc(a.date, b.date));
-        this.inbox.sort((a, b) => compareDesc(a.date, b.date));
+        this.alltasks.sort((a, b) => compareAsc(a.date, b.date));
+        this.inbox.sort((a, b) => compareAsc(a.date, b.date));
 
         // Populate the UI with the alltasks and inbox values
         this.inbox.forEach(object => {
@@ -127,6 +130,7 @@ const taskUI = {
             const difference = Math.floor(differenceInHours(today, object['date'])/24)|0;
             if (difference === 0) {
                 date.textContent = '📅 Due Today';
+                object.todo = true;
             } else if (difference > 0) {
                 date.textContent = '📅' + format(object['date'], ' MMM d y');
                 date.classList.add('late');
@@ -218,6 +222,7 @@ const formUI = {
         this.taskDate = document.querySelector('#date');
 
         this.editForm = document.querySelector('#edit-form');
+        this.editDelete = document.querySelector('#delete');
         this.editTaskTitle = document.querySelector('#edit-title');
         this.editTaskSelection = document.querySelector('#edit-category');
         this.editTaskDescription = document.querySelector('#edit-description');
@@ -260,6 +265,11 @@ const formUI = {
             formUI.editForm.classList.add('hidden');
             formUI.overlay.classList.add('hidden');
         });
+
+        this.editDelete.addEventListener('click', ()=> {
+            list.delTask(object.title);
+        });
+
         this.editForm.classList.remove('hidden');
         this.overlay.classList.remove('hidden');
     },
