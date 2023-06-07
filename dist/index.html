@@ -1,85 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script defer src="main.js"></script>
     <title>To Do List</title>
-</head>
-<body>
+  </head>
+  <body>
     <header>
-        <img id="logo" src="../src/pics/logo.svg" alt="To do logo">
-        <h1>To Do</h1>
+      <img id="logo" src="../src/pics/logo.svg" alt="To do logo" />
+      <h1>To Do</h1>
     </header>
     <main>
-        <nav class="side-bar">
-            <button id="nav-button" class="selected"><span>To Do</span></button>
-            <button id="nav-button"><span>Inbox</span></button>
-            <div id="projtitle">Projects</div>
-            <div id="projects">
-                
-            </div>
-            <button id="add-project">+</button>
-        </nav>
-        <div class="content">
-            <div id="content-header">
-                <div id="task-title" class="content-title">To Do</div>
-                <div id="date-string"></div>
-            </div>
-            <div id="task-container">
-                <div id="tasks"></div>
-                <button id="add-task" class="todo">+</button>
-            </div>
-            <div id="inbox" class="hidden">
-                <div id="content-header">Inbox</div>
-                <div id="inbox-container">
-                    <div id="inboxs"></div>
-                    <button id="add-task" class="inbox">+</button>
-                </div>
-            </div>
+      <nav class="side-bar">
+        <button id="nav-button" class="selected"><span>To Do</span></button>
+        <button id="nav-button"><span>Inbox</span></button>
+        <div id="projtitle">Projects</div>
+        <div id="projects"></div>
+        <button id="add-project">+</button>
+      </nav>
+      <div class="content">
+        <div id="content-header">
+          <div id="task-title" class="content-title">To Do</div>
+          <div id="date-string"></div>
         </div>
+        <div id="task-container">
+          <div id="tasks"></div>
+          <button id="add-task" class="todo">+</button>
+        </div>
+        <div id="inbox" class="hidden">
+          <div id="content-header">Inbox</div>
+          <div id="inbox-container">
+            <div id="inboxs"></div>
+            <button id="add-task" class="inbox">+</button>
+          </div>
+        </div>
+      </div>
     </main>
     <footer>
-        <p>Copyright © 2023 byoung22</p>
-        <a href="https://github.com/byoung22"><img src="../src/pics/github.svg" height="26px" alt="github link"></a>
+      <p>Copyright © 2023 byoung22</p>
+      <a href="https://github.com/byoung22"
+        ><img src="../src/pics/github.svg" height="26px" alt="github link"
+      /></a>
     </footer>
 
     <form id="project-form" class="hidden">
-        <div class="form-row title">New Project</div>
-        <input class="form-row" type="text" id="project-title" name="project-title" required placeholder="Project Name">
-        <button class="form-row" type="submit" id="submit">Add</button>
+      <div class="form-row title">New Project</div>
+      <input
+        class="form-row"
+        type="text"
+        id="project-title"
+        name="project-title"
+        required
+        placeholder="Project Name"
+      />
+      <button class="form-row" type="submit" id="submit">Add</button>
     </form>
 
     <form id="task-form" class="hidden">
-        <div class="form-row title">New Task</div>
-        <div class="form-row">
-            <label for="category">Project:</label>
-            <select name="category" id="category">
-                <option value="noCategory">Choose a Project</option>
-            </select>
-        </div>
-        <input class="form-row" type="text" id="title" name="title" required placeholder="Task">
-        <textarea class="form-row" id="description" name="description" maxlength="200" placeholder="Description..." style="resize: none;"></textarea>
-        <input class="form-row" type="date" id="date" name="date">
-        <button class="form-row" type="submit" id="submit">Add</button>
+      <div class="form-row title">New Task</div>
+      <div class="form-row">
+        <label for="category">Project:</label>
+        <select name="category" id="category">
+          <option value="noCategory">Choose a Project</option>
+        </select>
+      </div>
+      <input
+        class="form-row"
+        type="text"
+        id="title"
+        name="title"
+        required
+        placeholder="Task"
+      />
+      <textarea
+        class="form-row"
+        id="description"
+        name="description"
+        maxlength="200"
+        placeholder="Description..."
+        style="resize: none"
+      ></textarea>
+      <input class="form-row" type="date" id="date" name="date" />
+      <button class="form-row" type="submit" id="submit">Add</button>
     </form>
 
     <form id="edit-form" class="hidden">
-        <input class="form-row" type="text" id="edit-title" name="edit-title" required>
-        <div class="form-row">
-            <label for="edit-category">Project:</label>
-            <select name="edit-category" id="edit-category">
-                <option value="noCategory">Choose a Project</option>
-            </select>
-        </div>
-        <textarea class="form-row" id="edit-description" name="edit-description" maxlength="200" style="resize: none;"></textarea>
-        <input class="form-row" type="date" id="edit-date" name="edit-date">
-        <div class="button-holder form-row">
-            <button id="delete">Delete</button>
-            <button type="submit" id="submit">Edit ✎</button>
-        </div>
+      <input
+        class="form-row"
+        type="text"
+        id="edit-title"
+        name="edit-title"
+        required
+      />
+      <div class="form-row">
+        <label for="edit-category">Project:</label>
+        <select name="edit-category" id="edit-category">
+          <option value="noCategory">Choose a Project</option>
+        </select>
+      </div>
+      <textarea
+        class="form-row"
+        id="edit-description"
+        name="edit-description"
+        maxlength="200"
+        style="resize: none"
+      ></textarea>
+      <input class="form-row" type="date" id="edit-date" name="edit-date" />
+      <div class="button-holder form-row">
+        <button id="delete">Delete</button>
+        <button type="submit" id="submit">Edit ✎</button>
+      </div>
     </form>
     <div id="overlay" class="hidden"></div>
-</body>
+  </body>
 </html>

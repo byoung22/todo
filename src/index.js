@@ -1,5 +1,5 @@
-import renderUI from './render';
-import './styles.css';
+import renderUI from "./render";
+import "./styles.css";
 
 renderUI();
 
