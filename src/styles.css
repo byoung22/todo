@@ -142,7 +142,7 @@ main {
             z-index: 1;
             position: relative;
         }
-        #project-title {
+        #title {
             font-size: 35px;
             padding: 10px;
             color: var(--secondary-bg-color);
@@ -221,6 +221,9 @@ main {
                         grid-column: 3;
                         background: no-repeat center url(./pics/trash.svg);
                         background-size: 30px;
+                    }
+                    .trash:active{
+                        background-color: rgb(255, 156, 156);
                     }
                 }
             }

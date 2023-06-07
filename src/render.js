@@ -9,28 +9,38 @@ import parseISO from 'date-fns/parseISO'
 
 
 // Initialize
-let list = new List();
+const list = new List();
 const today = new Date();
 
 (function () {
     if (localStorage.list === undefined) {
-        // Initial data
+        // Initial example data
         list.addProject('🏫 School');
         list.addProject('💼 Work');
-        list.addTask('Homework', 'Math HW section 2-4', addDays(new Date(), -1), '🏫 School', false);
-        list.addTask('Science Homework', 'Biology HW posted on canvas', new Date(), '🏫 School', true);
-        list.addTask('Email Jenny', 'Ask about reports', addDays(new Date(), 1), '💼 Work', false);
-        list.addTask('Excel report', 'Add up expenses', addDays(new Date(), 4), '💼 Work', false);
-        list.addTask('Senior Design Project', 'Design freeze report', new Date(), '🏫 School', true);
-        list.addTask('Lab Report', 'Heat transfer lab 4', addDays(new Date(), 30), '🏫 School', true);
+        list.addTask('Homework', 'Math HW section 2-4', addDays(new Date(), -1), '🏫 School', false, false, false);
+        list.addTask('Science Homework', 'Biology HW posted on canvas', new Date(), '🏫 School', false, false, true);
+        list.addTask('Email Jenny', 'Ask about reports', addDays(new Date(), 1), '💼 Work', false, false, false);
+        list.addTask('Excel report', 'Add up expenses', addDays(new Date(), 4), '💼 Work', false, false, false);
+        list.addTask('Senior Design Project', 'Design freeze report', new Date(), '🏫 School', false, false, true);
+        list.addTask('Lab Report', 'Heat transfer lab 4', addDays(new Date(), 30), '🏫 School', false, false, true);
         console.log(list)
     } else {
         const storedString = localStorage.getItem('list');
-        list = JSON.parse(storedString);
+        let data = JSON.parse(storedString);
 
-        // Parse the dates
-        Object.values(list.storage).forEach(task => {
-            task.date = parseISO(task.date)
+        Object.values(data['projects']).forEach(project => {
+            if (project !== 'None') {
+                list.addProject(project);
+            }
+        });
+        Object.values(data['storage']).forEach(task => {
+            list.addTask(task['title'],
+                         task['description'],
+                         parseISO(task['date']),
+                         task['project'],
+                         task['important'],
+                         task['check'],
+                         task['todo']);
         });
     }
 })();
@@ -115,6 +125,11 @@ const taskUI = {
 
         check.setAttribute('type', 'checkbox');
         check.classList.add('check');
+        if (object['check']) {
+            check.checked = true;
+            star.classList.add('hidden');
+            trash.classList.remove('hidden');
+        }
         check.addEventListener('click', ()=> {
             object['check'] = check.checked;
             if (check.checked) {
@@ -124,6 +139,7 @@ const taskUI = {
                 star.classList.remove('hidden');
                 trash.classList.add('hidden');
             }
+            taskUI.taskRender();
         });
         card.appendChild(check);
 
@@ -162,24 +178,21 @@ const taskUI = {
         
         star.setAttribute('type', 'checkbox');
         star.classList.add('star');
+        if (object['important']) star.checked = true;
         star.addEventListener('click', ()=> {
             object['important'] = star.checked;
+            taskUI.taskRender();
         });
         card.appendChild(star);
 
         trash.classList.add('trash');
-        trash.classList.add('hidden');
+        if (!object['check']) trash.classList.add('hidden');
         trash.addEventListener('click', () => {
             list.delTask(object.title);
             this.taskRender();
         });
         card.appendChild(trash);
         
-        // If checked hide star and show trash
-        if (object['checked']) {
-            star.classList.add('hidden');
-            trash.classList.remove('hidden');
-        }
     },
     taskRender: function() {
         this.taskDOM();
@@ -345,6 +358,8 @@ const formUI = {
                 formUI.taskDescription.value,
                 date,
                 formUI.taskSelection.value,
+                false,
+                false,
                 todo,
             )
 

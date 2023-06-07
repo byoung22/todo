@@ -19,14 +19,14 @@ export default class List {
             if (this.projects[i] === title) this.projects.splice(i, 1);
         }
     }
-    addTask(title, description, date, project, todo) {
+    addTask(title, description, date, project, important, check, todo) {
         const task = {
             title: title,
             description: description,
             date: date,
             project: project,
-            important: false,
-            check: false,
+            important: important,
+            check: check,
             todo: todo,
         };
         this.storage[title] = task;
