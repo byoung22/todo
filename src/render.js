@@ -3,22 +3,37 @@ import format from 'date-fns/format';
 import differenceInHours from 'date-fns/differenceInHours';
 import addDays from 'date-fns/addDays'
 import compareAsc from 'date-fns/compareAsc';
+import parseISO from 'date-fns/parseISO'
+
 
 
 
 // Initialize
-const list = new List();
+let list = new List();
 const today = new Date();
 
-// Initial data
-list.addProject('🏫 School');
-list.addProject('💼 Work');
-list.addTask('Homework', 'Math HW section 2-4', addDays(new Date(), -1), '🏫 School', false);
-list.addTask('Science Homework', 'Biology HW posted on canvas', new Date(), '🏫 School', true);
-list.addTask('Email Jenny', 'Ask about reports', addDays(new Date(), 1), '💼 Work', false);
-list.addTask('Excel report', 'Add up expenses', addDays(new Date(), 4), '💼 Work', false);
-list.addTask('Senior Design Project', 'Design freeze report', new Date(), '🏫 School', true);
-list.addTask('Lab Report', 'Heat transfer lab 4', addDays(new Date(), 30), '🏫 School', true);
+(function () {
+    if (localStorage.list === undefined) {
+        // Initial data
+        list.addProject('🏫 School');
+        list.addProject('💼 Work');
+        list.addTask('Homework', 'Math HW section 2-4', addDays(new Date(), -1), '🏫 School', false);
+        list.addTask('Science Homework', 'Biology HW posted on canvas', new Date(), '🏫 School', true);
+        list.addTask('Email Jenny', 'Ask about reports', addDays(new Date(), 1), '💼 Work', false);
+        list.addTask('Excel report', 'Add up expenses', addDays(new Date(), 4), '💼 Work', false);
+        list.addTask('Senior Design Project', 'Design freeze report', new Date(), '🏫 School', true);
+        list.addTask('Lab Report', 'Heat transfer lab 4', addDays(new Date(), 30), '🏫 School', true);
+        console.log(list)
+    } else {
+        const storedString = localStorage.getItem('list');
+        list = JSON.parse(storedString);
+
+        // Parse the dates
+        Object.values(list.storage).forEach(task => {
+            task.date = parseISO(task.date)
+        });
+    }
+})();
 
 let currentPage = 'To Do';
 
@@ -90,7 +105,7 @@ const taskUI = {
 
         card.classList.add('card');
         card.addEventListener('click', (event) => {
-            if (event.target.className !== 'check' && event.target.className !== 'star') {
+            if (event.target.className !== 'check' && event.target.className !== 'star' && event.target.className !== 'trash') {
                 formUI.projectSelection();
                 formUI.cardButton(object);
                 formUI.presetVal(object);
@@ -171,6 +186,8 @@ const taskUI = {
         this.displayDate();
         this.displayTasks(currentPage);
         this.displayTitle(currentPage);
+        const listString = JSON.stringify(list);
+        localStorage.setItem('list', listString);
     }
 }
 
@@ -211,6 +228,8 @@ const navUI = {
         this.navDOM();
         this.navProject();
         this.navButtonLogic();
+        const listString = JSON.stringify(list);
+        localStorage.setItem('list', listString);
     },
 }
 
@@ -365,5 +384,5 @@ export default function renderUI() {
     navUI.navRender();
     taskUI.taskRender();
 
-    console.log(list);
+    console.log(localStorage.getItem('list'));
 }
